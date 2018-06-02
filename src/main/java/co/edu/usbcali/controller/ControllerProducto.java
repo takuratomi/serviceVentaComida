@@ -26,9 +26,23 @@ public class ControllerProducto {
 	@RequestMapping(value = "/crear", method = RequestMethod.POST)
 	public ProductoDTO crearProductoRest(@RequestBody ProductoDTO productoDTO) throws Exception {
 
+				
 		log.info("** LLAMADO CONTROLLERPRODCUTO/CREARPRODCUTO");
-
-		return productoLogica.crearProducto(productoDTO);
+		
+		try {
+			
+			productoLogica.crearProducto(productoDTO);
+			productoDTO.setMensajeError("Operación Exitosa");
+			productoDTO.setCodigoError(0);
+			
+			return productoDTO;
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			productoDTO.setMensajeError("Error: "+e.getMessage());
+			productoDTO.setCodigoError(91);
+			return productoDTO;
+		}
 	}
 
 	@RequestMapping(value = "/consultarTodos", method = RequestMethod.GET)
@@ -59,36 +73,4 @@ public class ControllerProducto {
 		}
 		return productodto;
 	}
-
-	/*
-	 * @RequestMapping(value="/modificar", method = RequestMethod.PUT) public
-	 * void modificarCliente(@RequestBody ClienteDTO clienteDTO)throws
-	 * Exception{
-	 * 
-	 * Clientes clientes=clienteLogica.consultarPorId(clienteDTO.getCliId());
-	 * if(clientes==null){ throw new Exception("El cliente no existe"); }
-	 * clientes.setCliDireccion(clienteDTO.getCliDireccion());
-	 * clientes.setCliId(clienteDTO.getCliId());
-	 * clientes.setCliMail(clienteDTO.getCliMail());
-	 * clientes.setCliNombre(clienteDTO.getCliNombre());
-	 * clientes.setCliTelefono(clienteDTO.getCliTelefono());
-	 * 
-	 * TiposDocumentos
-	 * tiposDocumentos=tipoDocumentoLogica.consultarPorId(clienteDTO.
-	 * getTdocCodigo()); clientes.setTiposDocumentos(tiposDocumentos);
-	 * 
-	 * clienteLogica.modificar(clientes);
-	 * 
-	 * }
-	 * 
-	 * @RequestMapping(value="/borrar/{id}", method = RequestMethod.DELETE)
-	 * public void borrarCliente(@PathVariable("id")Long id)throws Exception{
-	 * 
-	 * Clientes clientes=clienteLogica.consultarPorId(id); if(clientes==null){
-	 * throw new Exception("El cliente no existe"); }
-	 * 
-	 * clienteLogica.borrar(clientes);
-	 * 
-	 * }
-	 */
 }

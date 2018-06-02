@@ -28,11 +28,13 @@ public class ControllerPedido {
 
 		response.setIdHijo(0L);
 		response.setIdPadre(0L);
-		response.setMensajeError("Operacion Exitosa");
-		response.setCodigoError(0);
+		response.setMensajeError("");
+		response.setCodigoError(-1);
 		try {
 
 			pedidoLogica.crearPedido(semanaDTO);
+			response.setMensajeError("Operacion Exitosa");
+			response.setCodigoError(0);
 
 		} catch (Exception e) {
 

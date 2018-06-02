@@ -99,16 +99,9 @@ public class ControllerHijo {
 				hijoDTO.setSegundoApellido(hijo.getUsuario().getSegundoApellido());
 				hijoDTO.setNumIdentificacion(hijo.getUsuario().getNumIdentificacion());
 				hijoDTO.setTipoIdentificacion(hijo.getUsuario().getTipoIdentificacion());
-				// hijoDTO.setPassword(String password);
-				// hijoDTO.setEmail(String email);
 				hijoDTO.setRol(hijo.getUsuario().getRol());
-				// hijoDTO.setUsuario(String usuario);
-				// hijoDTO.setFecha();
-				// hijoDTO.setNumIdentificacionPadre(long
-				// numIdentificacionPadre);
 				hijoDTO.setFechaNacimiento(hijo.getFechaNacimiento());
 				hijoDTO.setCurso(hijo.getCurso());
-
 				misHijosDTO.add(hijoDTO);
 			}
 		}

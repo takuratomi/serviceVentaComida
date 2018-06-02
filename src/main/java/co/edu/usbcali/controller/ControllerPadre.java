@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.usbcali.dto.HijoDTO;
 import co.edu.usbcali.dto.PadreDTO;
 import co.edu.usbcali.dto.UsuarioDTO;
 import co.edu.usbcali.logica.IPadreLogica;
