@@ -73,7 +73,7 @@ public class PedidoLogica implements IPedidoLogica {
 			padre = padreLogica.consultarPadrePorIdentificacion(semanaDTO.getIdPadre());
 		}
 		if (semanaDTO.getIdHijo() > 0) {
-			misHijos = hijoLogica.consultarMisHijo(semanaDTO.getIdPadre());
+			misHijos = hijoLogica.consultarMisHijo(semanaDTO.getIdHijo());
 			for (Hijo hijo_ : misHijos) {
 				if (hijo_.getUsuario().getNumIdentificacion() == semanaDTO.getIdHijo()) {
 					hijo = hijo_;
@@ -103,12 +103,15 @@ public class PedidoLogica implements IPedidoLogica {
 		int totalDias = semanaDTO.getDiasDTO().length;
 		if (semanaDTO != null && semanaDTO.getDiasDTO() != null) {
 			for (int i = 0; i < totalDias; i++) {
-				if (semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId().compareTo(BigDecimal.ZERO) > 0
-						|| semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId().compareTo(BigDecimal.ZERO) > 0
-						|| semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId().compareTo(BigDecimal.ZERO) > 0
-						|| semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId().compareTo(BigDecimal.ZERO) > 0) {
-					contadorAlmuerzos++;
-				}
+				if(semanaDTO.getDiasDTO()[i] != null)
+				{
+					if (semanaDTO.getDiasDTO()[i].getPosition_sopa() > 0
+							|| semanaDTO.getDiasDTO()[i].getPosition_bebida() > 0
+							|| semanaDTO.getDiasDTO()[i].getPosition_principio() > 0
+							|| semanaDTO.getDiasDTO()[i].getPosition_proteina() > 0) {
+						contadorAlmuerzos++;
+					}
+				}				
 			}
 		}
 		return contadorAlmuerzos;

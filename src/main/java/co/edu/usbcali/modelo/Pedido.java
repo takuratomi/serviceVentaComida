@@ -1,5 +1,5 @@
 package co.edu.usbcali.modelo;
-// Generated 02-jun-2018 10:03:28 by Hibernate Tools 5.2.3.Final
+// Generated 02-jun-2018 18:22:08 by Hibernate Tools 5.2.3.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,7 +13,6 @@ public class Pedido implements java.io.Serializable {
 
 	private BigDecimal id;
 	private Padre padre;
-	private Pago pago;
 	private Date fechaPedido;
 	private Date fechaEntrega;
 	private Integer estado;
@@ -22,25 +21,21 @@ public class Pedido implements java.io.Serializable {
 	private Date fechaCreacion;
 	private String usuarioModifica;
 	private Date fechaModifica;
-	private BigDecimal almuerzoid;
 	private Set<Almuerzo> almuerzos = new HashSet<Almuerzo>(0);
 
 	public Pedido() {
 	}
 
-	public Pedido(BigDecimal id, Padre padre, Pago pago, BigDecimal almuerzoid) {
+	public Pedido(BigDecimal id, Padre padre) {
 		this.id = id;
 		this.padre = padre;
-		this.pago = pago;
-		this.almuerzoid = almuerzoid;
 	}
 
-	public Pedido(BigDecimal id, Padre padre, Pago pago, Date fechaPedido, Date fechaEntrega, Integer estado,
+	public Pedido(BigDecimal id, Padre padre, Date fechaPedido, Date fechaEntrega, Integer estado,
 			Integer cantAlmuerzos, String usuarioCreacion, Date fechaCreacion, String usuarioModifica,
-			Date fechaModifica, BigDecimal almuerzoid, Set<Almuerzo> almuerzos) {
+			Date fechaModifica, Set<Almuerzo> almuerzos) {
 		this.id = id;
 		this.padre = padre;
-		this.pago = pago;
 		this.fechaPedido = fechaPedido;
 		this.fechaEntrega = fechaEntrega;
 		this.estado = estado;
@@ -49,7 +44,6 @@ public class Pedido implements java.io.Serializable {
 		this.fechaCreacion = fechaCreacion;
 		this.usuarioModifica = usuarioModifica;
 		this.fechaModifica = fechaModifica;
-		this.almuerzoid = almuerzoid;
 		this.almuerzos = almuerzos;
 	}
 
@@ -67,14 +61,6 @@ public class Pedido implements java.io.Serializable {
 
 	public void setPadre(Padre padre) {
 		this.padre = padre;
-	}
-
-	public Pago getPago() {
-		return this.pago;
-	}
-
-	public void setPago(Pago pago) {
-		this.pago = pago;
 	}
 
 	public Date getFechaPedido() {
@@ -139,14 +125,6 @@ public class Pedido implements java.io.Serializable {
 
 	public void setFechaModifica(Date fechaModifica) {
 		this.fechaModifica = fechaModifica;
-	}
-
-	public BigDecimal getAlmuerzoid() {
-		return this.almuerzoid;
-	}
-
-	public void setAlmuerzoid(BigDecimal almuerzoid) {
-		this.almuerzoid = almuerzoid;
 	}
 
 	public Set<Almuerzo> getAlmuerzos() {

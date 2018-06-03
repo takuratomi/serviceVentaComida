@@ -1,5 +1,5 @@
 package co.edu.usbcali.modelo;
-// Generated 02-jun-2018 10:03:28 by Hibernate Tools 5.2.3.Final
+// Generated 02-jun-2018 18:22:08 by Hibernate Tools 5.2.3.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
