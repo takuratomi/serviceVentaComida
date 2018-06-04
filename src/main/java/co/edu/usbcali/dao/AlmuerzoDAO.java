@@ -20,7 +20,7 @@ public class AlmuerzoDAO implements IAlmuerzoDAO{
 	
 	@Override
 	public void crear(Almuerzo entity) {
-		sessionFactory.getCurrentSession().save(entity);		
+		sessionFactory.getCurrentSession().merge(entity);	
 	}
 
 	@Override

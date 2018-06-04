@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 02-jun-2018 18:22:09 by Hibernate Tools 5.2.3.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 03-jun-2018 13:45:36 by Hibernate Tools 5.2.3.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
     <class dynamic-insert="false" dynamic-update="false" mutable="true" name="co.edu.usbcali.modelo.Almuerzo" optimistic-lock="version" polymorphism="implicit" schema="public" select-before-update="false" table="almuerzo">
         <id name="id" type="big_decimal">
@@ -7,7 +7,7 @@
             <generator class="assigned"/>
         </id>
         <many-to-one class="co.edu.usbcali.modelo.Bebida" embed-xml="true" fetch="select" insert="true" name="bebida" not-found="exception" optimistic-lock="true" unique="false" update="true">
-            <column name="id_bebida" not-null="true" scale="0">
+            <column name="id_bebida" scale="0">
                 <comment>identificador de bebida</comment>
             </column>
         </many-to-one>
@@ -20,22 +20,22 @@
             <column name="id_pedido" not-null="true" precision="1000" scale="0"/>
         </many-to-one>
         <many-to-one class="co.edu.usbcali.modelo.Principio" embed-xml="true" fetch="select" insert="true" name="principio" not-found="exception" optimistic-lock="true" unique="false" update="true">
-            <column name="id_principio" not-null="true" scale="0">
+            <column name="id_principio" scale="0">
                 <comment>identificador de principio</comment>
             </column>
         </many-to-one>
         <many-to-one class="co.edu.usbcali.modelo.Proteina" embed-xml="true" fetch="select" insert="true" name="proteina" not-found="exception" optimistic-lock="true" unique="false" update="true">
-            <column name="id_proteina" not-null="true" scale="0">
+            <column name="id_proteina" scale="0">
                 <comment>identificador de proteina</comment>
             </column>
         </many-to-one>
         <many-to-one class="co.edu.usbcali.modelo.Sopa" embed-xml="true" fetch="select" insert="true" name="sopa" not-found="exception" optimistic-lock="true" unique="false" update="true">
-            <column name="id_sopa" not-null="true" scale="0">
+            <column name="id_sopa" scale="0">
                 <comment>identificador de sopa</comment>
             </column>
         </many-to-one>
         <property generated="never" lazy="false" name="dia" optimistic-lock="true" type="string" unique="false">
-            <column length="20" name="dia">
+            <column length="20" name="dia" not-null="true">
                 <comment>dia de la semana</comment>
             </column>
         </property>

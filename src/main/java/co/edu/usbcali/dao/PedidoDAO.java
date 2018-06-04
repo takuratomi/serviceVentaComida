@@ -1,6 +1,8 @@
 package co.edu.usbcali.dao;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
+import co.edu.usbcali.modelo.Hijo;
 import co.edu.usbcali.modelo.Pedido;
 
 
@@ -63,6 +66,19 @@ public class PedidoDAO implements IPedidoDAO{
 			consecutivo = new Long(0);
 		}
 		return consecutivo;
+	}
+
+	@Override
+	public List<Pedido> getPedidoFechaHijoPadre(Date fechaCreacion, long id_padre) {
+		// AND p.Padre.id='"+id_padre+"'
+		List<Pedido> misPedidos = null;
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		
+		String hql = "SELECT DISTINCT p FROM Pedido p, Almuerzo a, Padre pa  WHERE p.fechaCreacion ='"+format.format(fechaCreacion).toString()+"' AND p.id = a.id AND p.padre.id="+id_padre+"" ;
+		
+		misPedidos = sessionFactory.getCurrentSession().createQuery(hql).list();
+
+		return misPedidos;
 	}
 
 }

@@ -24,7 +24,6 @@
 		<mapping resource="co/edu/usbcali/modelo/Bebida.hbm.xml" />
 		<mapping resource="co/edu/usbcali/modelo/Padre.hbm.xml" />
 		<mapping resource="co/edu/usbcali/modelo/Almuerzo.hbm.xml" />
-		<mapping resource="co/edu/usbcali/modelo/Pago.hbm.xml" />
 		
 		<!-- archivos sql -->
 		<mapping resource="co/edu/usbcali/modelo/Secuencias.hbm.xml" />

@@ -1,7 +1,11 @@
 package co.edu.usbcali.logica;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -62,18 +66,26 @@ public class PedidoLogica implements IPedidoLogica {
 	public void crearPedido(SemanaDTO semanaDTO) throws Exception {
 
 		Pedido pedido = new Pedido();
-		Almuerzo almuerzo = new Almuerzo();
+		Almuerzo[] arrayAlmuerzos = null;
+		;
 		Padre padre = new Padre();
 		List<Hijo> misHijos = null;
 		Hijo hijo = new Hijo();
 		int estado = 1;
 		int cantidadAlmuerzos = getCantidadAlmuerzos(semanaDTO);
 
+		
+		
 		if (semanaDTO.getIdPadre() > 0) {
 			padre = padreLogica.consultarPadrePorIdentificacion(semanaDTO.getIdPadre());
+		
 		}
+		
+		// validacion de un pedido por semana
+		if(pedidoDAO.getPedidoFechaHijoPadre(new Date(), padre.getId()).size() > 0) throw new Exception("No se puede crear otro pedido para esta semana");
+			
 		if (semanaDTO.getIdHijo() > 0) {
-			misHijos = hijoLogica.consultarMisHijo(semanaDTO.getIdHijo());
+			misHijos = hijoLogica.consultarMisHijo(semanaDTO.getIdPadre());
 			for (Hijo hijo_ : misHijos) {
 				if (hijo_.getUsuario().getNumIdentificacion() == semanaDTO.getIdHijo()) {
 					hijo = hijo_;
@@ -86,16 +98,21 @@ public class PedidoLogica implements IPedidoLogica {
 		pedido.setCantAlmuerzos(cantidadAlmuerzos);
 		pedido.setEstado(estado);
 		pedido.setPadre(padre);
+		pedido.setFechaCreacion(new Date());
 
-		almuerzo.setId(new BigDecimal(almuerzoDAO.getConsecutivo()));
-		almuerzo.setPedido(pedido);
+		arrayAlmuerzos = constructMenuSemana(semanaDTO, hijo, pedido);
 
-		almuerzo.setHijo(hijo);
-		almuerzo.setEstado(estado);
-
-		// almacenamiento
-		pedidoDAO.crear(pedido);
-		almuerzoDAO.crear(almuerzo);
+		if (arrayAlmuerzos != null) {
+			pedidoDAO.crear(pedido);
+			for (Almuerzo almur : arrayAlmuerzos) {
+				if(almur != null)
+				{				
+					almur.setId(new BigDecimal(almuerzoDAO.getConsecutivo()));
+					almuerzoDAO.crear(almur);
+				}
+				
+			}
+		}
 	}
 
 	public int getCantidadAlmuerzos(SemanaDTO semanaDTO) {
@@ -103,215 +120,107 @@ public class PedidoLogica implements IPedidoLogica {
 		int totalDias = semanaDTO.getDiasDTO().length;
 		if (semanaDTO != null && semanaDTO.getDiasDTO() != null) {
 			for (int i = 0; i < totalDias; i++) {
-				if(semanaDTO.getDiasDTO()[i] != null)
-				{
+				if (semanaDTO.getDiasDTO()[i] != null) {
 					if (semanaDTO.getDiasDTO()[i].getPosition_sopa() > 0
 							|| semanaDTO.getDiasDTO()[i].getPosition_bebida() > 0
 							|| semanaDTO.getDiasDTO()[i].getPosition_principio() > 0
 							|| semanaDTO.getDiasDTO()[i].getPosition_proteina() > 0) {
 						contadorAlmuerzos++;
 					}
-				}				
+				}
 			}
 		}
 		return contadorAlmuerzos;
 	}
 
 	public Almuerzo[] constructMenuSemana(SemanaDTO semanaDTO, Hijo hijo, Pedido pedido) {
-		String estado = "e";
+		Integer estado = 1;
 		Almuerzo[] menuSemana = null;
 		Sopa sopa = null;
 		Bebida bebida = null;
 		Proteina proteina = null;
 		Principio principio = null;
+		Almuerzo mSemana = null;
+
+		Map<Integer, String> diasSemana = new HashMap<>();
+		diasSemana.put(1, "L");
+		diasSemana.put(2, "M");
+		diasSemana.put(3, "MI");
+		diasSemana.put(4, "J");
+		diasSemana.put(5, "V");
+
+		Date creacion = new Date();
 
 		int totalDias = semanaDTO.getDiasDTO().length;
 		if (semanaDTO != null && semanaDTO.getDiasDTO() != null) {
 			menuSemana = new Almuerzo[totalDias];
+			
 			for (int i = 0; i < totalDias; i++) {
-				Almuerzo mSemana = new Almuerzo();
+				boolean booProducto = false;
+				mSemana = new Almuerzo();
 				/**
 				 * getDiasDTO[n]
 				 * 
 				 * n:0 -> LUNES n:1 -> MARTES n:2 -> MIERCOLES n:3 -> JUEVES n:4
 				 * -> VIERNES
 				 */
+
+				if (semanaDTO.getDiasDTO()[i].getPosition_sopa() > 0) {
+					sopa = sopaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId());
+					mSemana.setSopa(sopa);
+					booProducto = true;
+				}
+				if (semanaDTO.getDiasDTO()[i].getPosition_bebida() > 0) {
+					bebida = bebidaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId());
+					mSemana.setBebida(bebida);
+					booProducto = true;
+				}
+				if (semanaDTO.getDiasDTO()[i].getPosition_principio() > 0) {
+					principio = principioDAO
+							.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId());
+					mSemana.setPrincipio(principio);
+					booProducto = true;
+				}
+				if (semanaDTO.getDiasDTO()[i].getPosition_proteina() > 0) {
+					proteina = proteinaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId());
+					mSemana.setProteina(proteina);
+					booProducto = true;
+				}
+
+				// LUNES
 				if (i == 0) {
-					if (semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId()
-									.compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId()
-									.compareTo(BigDecimal.ZERO) > 0) {
-						sopa = sopaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId());
-						bebida = bebidaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId());
-						proteina = proteinaDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId());
-						principio = principioDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId());
-
-						if (sopa != null || sopa.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setSopa(sopa);
-						}
-						if (bebida != null || bebida.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-						if (proteina != null || proteina.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setProteina(proteina);
-						}
-						if (principio != null || principio.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-
-						mSemana.setDia("L");
-						mSemana.setHijo(hijo);
-						mSemana.setPedido(pedido);
-						mSemana.setEstado(1);
-						mSemana.getFechaCreacion();
-
-					}
+					mSemana.setDia(diasSemana.get(1));
 				}
-
+				// MARTES
 				if (i == 1) {
-					if (semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId()
-									.compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId()
-									.compareTo(BigDecimal.ZERO) > 0) {
-						sopa = sopaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId());
-						bebida = bebidaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId());
-						proteina = proteinaDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId());
-						principio = principioDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId());
-
-						if (sopa != null || sopa.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setSopa(sopa);
-						}
-						if (bebida != null || bebida.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-						if (proteina != null || proteina.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setProteina(proteina);
-						}
-						if (principio != null || principio.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-
-						mSemana.setDia("M");
-						mSemana.setHijo(hijo);
-						mSemana.setPedido(pedido);
-						mSemana.setEstado(1);
-						mSemana.getFechaCreacion();
-					}
+					mSemana.setDia(diasSemana.get(2));
 				}
-
+				// MIERCOLES
 				if (i == 2) {
-					if (semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId()
-									.compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId()
-									.compareTo(BigDecimal.ZERO) > 0) {
-						sopa = sopaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId());
-						bebida = bebidaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId());
-						proteina = proteinaDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId());
-						principio = principioDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId());
-
-						if (sopa != null || sopa.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setSopa(sopa);
-						}
-						if (bebida != null || bebida.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-						if (proteina != null || proteina.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setProteina(proteina);
-						}
-						if (principio != null || principio.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-
-						mSemana.setDia("MI");
-						mSemana.setHijo(hijo);
-						mSemana.setPedido(pedido);
-						mSemana.setEstado(1);
-						mSemana.getFechaCreacion();
-					}
+					mSemana.setDia(diasSemana.get(3));
 				}
-
+				// JUEVES
 				if (i == 3) {
-					if (semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId()
-									.compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId()
-									.compareTo(BigDecimal.ZERO) > 0) {
-						sopa = sopaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId());
-						bebida = bebidaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId());
-						proteina = proteinaDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId());
-						principio = principioDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId());
-
-						if (sopa != null || sopa.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setSopa(sopa);
-						}
-						if (bebida != null || bebida.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-						if (proteina != null || proteina.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setProteina(proteina);
-						}
-						if (principio != null || principio.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-
-						mSemana.setDia("J");
-						mSemana.setHijo(hijo);
-						mSemana.setPedido(pedido);
-						mSemana.setEstado(1);
-						mSemana.getFechaCreacion();
-					}
+					mSemana.setDia(diasSemana.get(4));
 				}
-
+				// VIERNES
 				if (i == 4) {
-					if (semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId().compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId()
-									.compareTo(BigDecimal.ZERO) > 0
-							|| semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId()
-									.compareTo(BigDecimal.ZERO) > 0) {
-						sopa = sopaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_sopa().getId());
-						bebida = bebidaDAO.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_bebida().getId());
-						proteina = proteinaDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_proteina().getId());
-						principio = principioDAO
-								.consultarPorId(semanaDTO.getDiasDTO()[i].getProductoDTO_principio().getId());
-
-						if (sopa != null || sopa.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setSopa(sopa);
-						}
-						if (bebida != null || bebida.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-						if (proteina != null || proteina.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setProteina(proteina);
-						}
-						if (principio != null || principio.getId().compareTo(BigDecimal.ZERO) > 0) {
-							mSemana.setBebida(bebida);
-						}
-
-						mSemana.setDia("V");
-						mSemana.setHijo(hijo);
-						mSemana.setPedido(pedido);
-						mSemana.setEstado(1);
-						mSemana.getFechaCreacion();
-					}
+					mSemana.setDia(diasSemana.get(5));
 				}
-				menuSemana[i] = mSemana;
+				
+				mSemana.setHijo(hijo);
+				mSemana.setPedido(pedido);
+				mSemana.setEstado(estado);
+				mSemana.setFechaCreacion(creacion);
+				
+				if(booProducto)
+				{
+					menuSemana[i] = mSemana;
+				}
+				else
+				{
+					menuSemana[i] = null;
+				}				
 			}
 		}
 		return menuSemana;

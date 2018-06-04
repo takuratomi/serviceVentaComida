@@ -57,12 +57,7 @@
 	    SELECT nextval('seq_almuerzo');
 	  ]]>
 	  </sql-query>
-	  <sql-query name="MENUSEMANA_SEQ">
-		<return-scalar column="nextval" type="java.lang.Long" />
-	  <![CDATA[
-	    SELECT nextval('seq_menu_semana');
-	  ]]>
-	  </sql-query>
+	  
 	  
 	  	
 </hibernate-mapping>

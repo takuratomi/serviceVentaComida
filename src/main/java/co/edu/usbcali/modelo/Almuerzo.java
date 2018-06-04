@@ -1,5 +1,5 @@
 package co.edu.usbcali.modelo;
-// Generated 02-jun-2018 18:22:08 by Hibernate Tools 5.2.3.Final
+// Generated 03-jun-2018 13:45:35 by Hibernate Tools 5.2.3.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -26,15 +26,11 @@ public class Almuerzo implements java.io.Serializable {
 	public Almuerzo() {
 	}
 
-	public Almuerzo(BigDecimal id, Bebida bebida, Hijo hijo, Pedido pedido, Principio principio, Proteina proteina,
-			Sopa sopa) {
+	public Almuerzo(BigDecimal id, Hijo hijo, Pedido pedido, String dia) {
 		this.id = id;
-		this.bebida = bebida;
 		this.hijo = hijo;
 		this.pedido = pedido;
-		this.principio = principio;
-		this.proteina = proteina;
-		this.sopa = sopa;
+		this.dia = dia;
 	}
 
 	public Almuerzo(BigDecimal id, Bebida bebida, Hijo hijo, Pedido pedido, Principio principio, Proteina proteina,

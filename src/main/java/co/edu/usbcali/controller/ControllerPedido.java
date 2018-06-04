@@ -37,9 +37,9 @@ public class ControllerPedido {
 			response.setCodigoError(0);
 
 		} catch (Exception e) {
-
+			log.debug(e.getMessage());
 			response.setCodigoError(91);
-			response.setMensajeError("ERRO:" + e.getMessage());
+			response.setMensajeError(e.getMessage());
 
 		}
 		return response;
